@@ -1,0 +1,7 @@
+{
+  "name": "front_servinet",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite"
+}
