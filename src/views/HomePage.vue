@@ -1,56 +1,78 @@
 <template>
   <ion-page>
-    <ion-header :translucent="true">
+    <ion-header>
       <ion-toolbar>
-        <ion-title>Blank</ion-title>
+        <ion-title>Inicio</ion-title>
+        <!-- Botón de logout en el header -->
+        <ion-buttons slot="end">
+          <ion-button @click="handleLogout">
+            Cerrar Sesión
+          </ion-button>
+        </ion-buttons>
       </ion-toolbar>
     </ion-header>
-
-    <ion-content :fullscreen="true">
-      <ion-header collapse="condense">
-        <ion-toolbar>
-          <ion-title size="large">Blank</ion-title>
-        </ion-toolbar>
-      </ion-header>
-
-      <div id="container">
-        <strong>Ready to create an app?</strong>
-        <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-      </div>
+    
+    <ion-content class="ion-padding">
+      
+      <!-- Mostrar datos del usuario -->
+      <ion-card v-if="user">
+        <ion-card-header>
+          <ion-card-title>¡Bienvenido!</ion-card-title>
+          <ion-card-subtitle>{{ user.name }}</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <p><strong>Email:</strong> {{ user.email }}</p>
+          <p><strong>Rol:</strong> {{ user.role || 'usuario' }}</p>
+        </ion-card-content>
+      </ion-card>
+      
+      <!-- Botón para ir al Dashboard (solo si es admin) -->
+      <ion-button 
+        v-if="isAdmin" 
+        expand="block" 
+        router-link="/dashboard"
+        color="primary"
+      >
+        Ir al Dashboard (Solo Admin)
+      </ion-button>
+      
+      <!-- Si NO es admin, mostrar mensaje -->
+      <ion-card v-else>
+        <ion-card-content>
+          <p>No tienes acceso al Dashboard (solo para administradores)</p>
+        </ion-card-content>
+      </ion-card>
+      
     </ion-content>
   </ion-page>
 </template>
 
 <script setup lang="ts">
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/vue';
+import { computed } from 'vue';
+import { useRouter } from 'vue-router';
+import { user, logout } from '../services/auth';
+import {
+  IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
+  IonButtons, IonButton, IonCard, IonCardHeader,
+  IonCardTitle, IonCardSubtitle, IonCardContent
+} from '@ionic/vue';
+
+// ==============================================================
+// Variables
+// ==============================================================
+const router = useRouter();
+
+// Verificamos si el usuario es admin
+// user.value viene del servicio auth.ts y es reactivo
+const isAdmin = computed(() => {
+  return user.value?.role === 'admin' || user.value?.roles?.includes('admin');
+});
+
+// ==============================================================
+// Función para hacer logout
+// ==============================================================
+const handleLogout = async () => {
+  await logout();  // Llamamos la función logout del servicio
+  router.push('/login');  // Redirigimos al login
+};
 </script>
-
-<style scoped>
-#container {
-  text-align: center;
-  
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-#container strong {
-  font-size: 20px;
-  line-height: 26px;
-}
-
-#container p {
-  font-size: 16px;
-  line-height: 22px;
-  
-  color: #8c8c8c;
-  
-  margin: 0;
-}
-
-#container a {
-  text-decoration: none;
-}
-</style>
