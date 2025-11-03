@@ -4,6 +4,7 @@ import HomePage from '../views/HomePage.vue'
 import { token, user, loadSession } from '../services/auth';
 import LoginPage from '../views/LoginPage.vue';
 import PruebaPage from '../views/PruebaPage.vue';
+import ServiciosList from '@/views/servicios/ServiciosList.vue';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -27,6 +28,13 @@ const routes: Array<RouteRecordRaw> = [
     component: HomePage,
     meta: { requiresAuth: true }  // Esta ruta requiere estar logueado
   },
+
+
+  {
+  path: '/negocios/:id_negocio/servicios',
+  name: 'Servicios',
+  component: () => import('@/views/servicios/ServiciosList.vue')
+}
   
 ]
 
