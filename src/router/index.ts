@@ -1,72 +1,91 @@
-import { createRouter, createWebHistory } from '@ionic/vue-router';
-import { RouteRecordRaw } from 'vue-router';
-import HomePage from '../views/HomePage.vue'
-import { token, user, loadSession } from '../services/auth';
-import LoginPage from '../views/LoginPage.vue';
-import PruebaPage from '../views/PruebaPage.vue';
+// src/router/index.ts
+import { createRouter, createWebHistory } from '@ionic/vue-router'
+import type { RouteRecordRaw } from 'vue-router'
+
+import HomePage from '@/views/HomePage.vue'
+import LoginPage from '@/views/LoginPage.vue'
+import LoadingPage from '@/views/LoadingPage.vue'
+import NegociosFeedView from '@/views/NegociosFeedView.vue'
+import MiNegocioView from '@/views/MiNegocioView.vue'
+import Debug from '@/views/Debug.vue'
+import SolicitudesView from '@/views/SolicitudesView.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    redirect: '/login'
+    name: 'Root',
+    component: LoadingPage,
+    beforeEnter: (to, from, next) => {
+      const token = localStorage.getItem('token')
+      if (token) next({ name: 'Home' })
+      else next({ name: 'Login' })
+    },
   },
   {
     path: '/login',
     name: 'Login',
-    component: LoginPage
-  },
-  {
-    path: '/prueba',
-    name: 'Prueba',
-    component: PruebaPage,
-    meta: { requiresAuth: true }  // Esta ruta requiere ser admin
+    component: LoginPage,
   },
   {
     path: '/home',
     name: 'Home',
     component: HomePage,
-    meta: { requiresAuth: true }  // Esta ruta requiere estar logueado
+    meta: { requiresAuth: true },
   },
-  
+  {
+    path: '/negocios-feed',
+    name: 'negocios-feed',
+    component: NegociosFeedView,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/mi-negocio',
+    name: 'mi-negocio',
+    component: MiNegocioView,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/debug',
+    name: 'debug',
+    component: Debug,
+    meta: {requiresAuth: true}
+  },
+  {
+    path: '/solicitudes',
+    name: 'solicitudes',
+    component: SolicitudesView,
+    meta: { requiresAuth: true, requiresAdmin: true}
+  }
 ]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes
+  routes,
 })
 
-router.beforeEach(async (to, from, next) => {
-  
-  // PASO 1: Si no hay token, intentamos cargarlo del dispositivo
-  if (!token.value) {
-    await loadSession();
+// ===============================
+// Global guard
+// ===============================
+import { authService } from '@/services/authService'
+router.beforeEach((to, from, next) => {
+  const token = authService.getToken()
+  const user = authService.getUser()
+
+  // Si la ruta requiere auth y no hay token -> redirigir al login
+  if (to.meta.requiresAuth && !token) {
+    return next({ name: 'Login' })
+  }
+  // Si la ruta requiere admin y el usuario no es admin -> redirigir al home
+  if (to.meta.requiresAdmin && (!user || user.role !== 'admin')) {
+    return next({ name: 'Home' }) // O a otra ruta de tu preferencia
   }
 
-  // PASO 2: Verificamos si la ruta requiere autenticación
-  const requiresAuth = to.meta.requiresAuth;
-  
-  if (requiresAuth && !token.value) {
-    // Si la ruta necesita login y NO hay token → Redirigir a login
-    return next({ name: 'Login' });
+  // Si el usuario ya está logueado y quiere ir al login -> redirigir al home
+  if (to.name === 'Login' && token) {
+    return next({ name: 'Home' })
   }
 
-  // PASO 3: Verificamos si la ruta requiere ser admin
-  const requiresAdmin = to.meta.requiresAdmin;
-  
-  if (requiresAdmin) {
-    // Aquí verificamos si el usuario tiene rol de admin
-    // Asumiendo que Laravel devuelve user.role o user.roles
-    const isAdmin = user.value?.role === 'admin' || user.value?.roles?.includes('admin');
-    
-    if (!isAdmin) {
-      // Si NO es admin → Redirigir a home o mostrar error
-      alert('No tienes permisos para acceder a esta página');
-      return next({ name: 'Home' });
-    }
-  }
+  next()
+})
 
-  // PASO 4: Si todo está bien, dejamos pasar
-  next();
-});
-
-export default router;
+export default router

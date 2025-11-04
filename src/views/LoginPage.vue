@@ -14,13 +14,13 @@
                     <ion-input v-model="email" type="email" required></ion-input>
                 </ion-item>
 
-                <!-- Campo Password -->
+                <!-- Campo Contraseña -->
                 <ion-item>
                     <ion-label position="floating">Contraseña</ion-label>
                     <ion-input v-model="password" type="password" required></ion-input>
                 </ion-item>
 
-                <!-- Mostrar error si hay -->
+                <!-- Mensaje de error -->
                 <ion-text color="danger" v-if="errorMessage">
                     <p>{{ errorMessage }}</p>
                 </ion-text>
@@ -30,7 +30,7 @@
                     {{ loading ? "Cargando..." : "Iniciar Sesión" }}
                 </ion-button>
 
-                <!-- Link a Register -->
+                <!-- Link a registro (si aplica) -->
                 <ion-button expand="block" fill="clear" router-link="/register">
                     ¿No tienes cuenta? Regístrate
                 </ion-button>
@@ -42,7 +42,8 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import { login } from "../services/auth";
+import { authService } from "@/services/authService";
+
 import {
     IonPage,
     IonHeader,
@@ -56,34 +57,28 @@ import {
     IonText,
 } from "@ionic/vue";
 
-// ==============================================================
-// Variables reactivas
-// ==============================================================
 const router = useRouter();
+
+// Campos reactivos
 const email = ref("");
 const password = ref("");
 const loading = ref(false);
 const errorMessage = ref("");
 
-// ==============================================================
-// Función para hacer login
-// ==============================================================
+// Función principal de login
 const handleLogin = async () => {
-    // Limpiar errores anteriores
     errorMessage.value = "";
     loading.value = true;
 
     try {
-        // Llamamos la función login del servicio auth.ts
-        await login(email.value, password.value);
-
-        // Si todo sale bien, redirigimos al home
+        const user = await authService.login(email.value, password.value);
+        console.log("Usuario autenticado:", user);
         router.push("/home");
     } catch (error: any) {
-        // Si hay error, lo mostramos
         console.error("Error en login:", error);
         errorMessage.value =
-            error.response?.data?.message || "Error al iniciar sesión";
+            error.response?.data?.message ||
+            "Credenciales incorrectas o error de conexión.";
     } finally {
         loading.value = false;
     }
