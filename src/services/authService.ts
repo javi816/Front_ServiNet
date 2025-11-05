@@ -2,6 +2,7 @@
 import axios from 'axios';
 import { ref } from 'vue';
 import router from '@/router';
+import { negocioService } from '@/services/negocioService'; // 👈 Importa el negocioService
 
 const API_URL = 'https://api-servi-net.onrender.com/api';
 
@@ -38,6 +39,19 @@ export const authService = {
         // Actualizar estado reactivo
         currentUser.value = user;
 
+        // Intentar obtener el negocio del usuario (si tiene)
+        try {
+            const negocio = await negocioService.getMiNegocio();
+            if (negocio) {
+                localStorage.setItem('negocio', JSON.stringify(negocio));
+            } else {
+                localStorage.removeItem('negocio');
+            }
+        } catch (error) {
+            console.warn('Error al obtener el negocio del usuario:', error);
+            localStorage.removeItem('negocio');
+        }
+
         return user;
     },
 
@@ -67,5 +81,11 @@ export const authService = {
 
     getUser() {
         return currentUser.value;
-    }
+    },
+
+    // 👇 Nuevo helper para acceder al negocio guardado
+    getNegocio() {
+        const stored = localStorage.getItem('negocio');
+        return stored ? JSON.parse(stored) : null;
+    },
 };
