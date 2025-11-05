@@ -9,6 +9,7 @@ import NegociosFeedView from '@/views/NegociosFeedView.vue'
 import MiNegocioView from '@/views/MiNegocioView.vue'
 import Debug from '@/views/Debug.vue'
 import SolicitudesView from '@/views/SolicitudesView.vue'
+import EmpleadoList from '@/views/EmpleadoList.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -55,9 +56,13 @@ const routes: Array<RouteRecordRaw> = [
     name: 'solicitudes',
     component: SolicitudesView,
     meta: { requiresAuth: true, requiresAdmin: true}
-  }
+  },
+   {
+    path: '/empleados',
+    name: 'Empleados',
+    component: EmpleadoList,
+  },
 ]
-
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
