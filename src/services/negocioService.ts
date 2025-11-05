@@ -11,6 +11,7 @@ export interface Negocio {
     created_at: string
     updated_at: string
 }
+
 export interface NegocioSolicitud {
     nombre: string
     direccion: string
@@ -18,6 +19,7 @@ export interface NegocioSolicitud {
     correo: string
     foto?: string | null
 }
+
 export const negocioService = {
     // Obtener feed de negocios aprobados
     async getFeed(): Promise<Negocio[]> {
@@ -50,5 +52,28 @@ export const negocioService = {
                 throw new Error('Error de conexión con el servidor')
             }
         }
+    },
+
+    async getMiNegocio(): Promise<Negocio | null> {
+        try {
+            const response = await axiosInstance.get<{ negocio: Negocio }>('/minegocio')
+            const negocio = response.data.negocio
+
+            localStorage.setItem('negocio', JSON.stringify(negocio))
+            return negocio
+        } catch (error: any) {
+            console.warn('El usuario no tiene negocio asociado o no se pudo obtener:', error)
+            localStorage.removeItem('negocio')
+            return null
+        }
+    },
+
+    getNegocio() {
+        const stored = localStorage.getItem('negocio')
+        return stored ? JSON.parse(stored) : null
+    },
+
+    clearNegocio() {
+        localStorage.removeItem('negocio')
     },
 }
