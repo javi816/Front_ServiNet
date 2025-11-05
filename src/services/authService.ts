@@ -41,9 +41,9 @@ export const authService = {
 
         // Intentar obtener el negocio del usuario (si tiene)
         try {
-            const negocio = await negocioService.getMiNegocio();
-            if (negocio) {
-                localStorage.setItem('negocio', JSON.stringify(negocio));
+            const negocioData = await negocioService.getMiNegocio();
+            if (negocioData && negocioData.negocio) {
+                localStorage.setItem('negocio', JSON.stringify(negocioData));
             } else {
                 localStorage.removeItem('negocio');
             }
