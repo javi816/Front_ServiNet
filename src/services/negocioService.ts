@@ -20,16 +20,19 @@ export interface NegocioSolicitud {
     foto?: string | null
 }
 
+export interface MiNegocioResponse {
+    negocio: Negocio | null
+    rol?: string
+}
+
 export const negocioService = {
-    // Obtener feed de negocios aprobados
+    // Feed público de negocios aprobados
     async getFeed(): Promise<Negocio[]> {
         try {
             const response = await axiosInstance.get<{
                 message: string
                 data: { data: Negocio[] }
             }>('/negocios/feed')
-
-            // Retorna directamente la lista de negocios
             return response.data.data.data
         } catch (error: any) {
             console.error('Error al obtener feed de negocios:', error)
@@ -37,6 +40,7 @@ export const negocioService = {
         }
     },
 
+    // Enviar solicitud para crear un negocio
     async solicitarNegocio(data: NegocioSolicitud) {
         try {
             const response = await axiosInstance.post<{
@@ -54,26 +58,37 @@ export const negocioService = {
         }
     },
 
-    async getMiNegocio(): Promise<Negocio | null> {
+    // 🔹 Nuevo: obtener negocio asociado al usuario
+    async getMiNegocio(): Promise<MiNegocioResponse> {
         try {
-            const response = await axiosInstance.get<{ negocio: Negocio }>('/minegocio')
-            const negocio = response.data.negocio
+            const response = await axiosInstance.post<MiNegocioResponse>('/mi-negocio')
+            const data = response.data
 
-            localStorage.setItem('negocio', JSON.stringify(negocio))
-            return negocio
+            // Guarda localmente para futuras cargas rápidas
+            localStorage.setItem('negocio', JSON.stringify(data.negocio))
+            localStorage.setItem('rol', data.rol || '')
+
+            return data
         } catch (error: any) {
-            console.warn('El usuario no tiene negocio asociado o no se pudo obtener:', error)
+            console.warn('No se pudo obtener el negocio del usuario:', error)
             localStorage.removeItem('negocio')
-            return null
+            localStorage.removeItem('rol')
+            return { negocio: null }
         }
     },
 
+    // Obtener desde localStorage
     getNegocio() {
         const stored = localStorage.getItem('negocio')
         return stored ? JSON.parse(stored) : null
     },
 
+    getRol() {
+        return localStorage.getItem('rol') || null
+    },
+
     clearNegocio() {
         localStorage.removeItem('negocio')
+        localStorage.removeItem('rol')
     },
 }
