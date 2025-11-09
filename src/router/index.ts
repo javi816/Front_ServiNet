@@ -10,6 +10,7 @@ import MiNegocioView from '@/views/MiNegocioView.vue'
 import Debug from '@/views/Debug.vue'
 import SolicitudesView from '@/views/SolicitudesView.vue'
 import EmpleadoList from '@/views/EmpleadoList.vue'
+import ServiciosNegociosView from '@/views/ServiciosNegociosView.vue'
 import RegisterView from '@/views/RegisterView.vue'
 
 const routes: Array<RouteRecordRaw> = [
@@ -50,15 +51,15 @@ const routes: Array<RouteRecordRaw> = [
     path: '/debug',
     name: 'debug',
     component: Debug,
-    meta: {requiresAuth: true}
+    meta: { requiresAuth: true }
   },
   {
     path: '/solicitudes',
     name: 'solicitudes',
     component: SolicitudesView,
-    meta: { requiresAuth: true, requiresAdmin: true}
+    meta: { requiresAuth: true, requiresAdmin: true }
   },
-   {
+  {
     path: '/empleados',
     name: 'Empleados',
     component: EmpleadoList,
@@ -72,6 +73,12 @@ const routes: Array<RouteRecordRaw> = [
   path: '/perfil',
   name: 'Perfil',
   component: () => import('@/views/PerfilView.vue'),
+  },
+  {
+    path: '/servicios',
+    name: 'servicios',
+    component : ServiciosNegociosView,
+    meta: { requiresAuth: true }
   }
 ]
 const router = createRouter({
@@ -86,22 +93,25 @@ import { authService } from '@/services/authService'
 router.beforeEach((to, from, next) => {
   const token = authService.getToken()
   const user = authService.getUser()
+  const negocioData = authService.getNegocio() // { negocio, rol }
 
-  // Si la ruta requiere auth y no hay token -> redirigir al login
-  if (to.meta.requiresAuth && !token) {
-    return next({ name: 'Login' })
-  }
-  // Si la ruta requiere admin y el usuario no es admin -> redirigir al home
-  if (to.meta.requiresAdmin && (!user || user.role !== 'admin')) {
-    return next({ name: 'Home' }) // O a otra ruta de tu preferencia
-  }
+  // Requiere autenticación
+  if (to.meta.requiresAuth && !token) return next({ name: 'Login' })
 
-  // Si el usuario ya está logueado y quiere ir al login -> redirigir al home
-  if (to.name === 'Login' && token) {
-    return next({ name: 'Home' })
-  }
+  // Requiere admin general
+  if (to.meta.requiresAdmin && (!user || user.role !== 'admin')) return next({ name: 'Home' })
+
+  // Requiere admin de negocio
+  if (to.meta.requiresNegocioAdmin && (!negocioData || negocioData.rol !== 'admin')) return next({ name: 'Home' })
+
+  // Requiere empleado o admin de negocio
+  if (to.meta.requiresNegocioEmpleado && (!negocioData || !['admin','empleado'].includes(negocioData.rol))) return next({ name: 'Home' })
+
+  // Si ya está logueado e intenta ir a login
+  if (to.name === 'Login' && token) return next({ name: 'Home' })
 
   next()
 })
+
 
 export default router
