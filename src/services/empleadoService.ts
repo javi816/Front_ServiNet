@@ -5,7 +5,7 @@ export default {
   // 🔹 Listar empleados de un negocio
   async listarEmpleados(id_negocio: number) {
     const response = await axiosInstance.get(`/negocios/${id_negocio}/empleados`);
-    return response.data;
+    return response.data as any;
   },
 
   // 🔹 Buscar usuarios disponibles para agregar
@@ -13,19 +13,19 @@ export default {
     const response = await axiosInstance.get(`/negocios/${id_negocio}/empleados/buscar`, {
       params: { query },
     });
-    return response.data.usuario;
+    return (response.data as any).usuario;
   },
 
   // 🔹 Agregar un empleado
   async agregarEmpleado(id_negocio: number, data: any) {
     const response = await axiosInstance.post(`/negocios/${id_negocio}/empleados`, data);
-    return response.data;
+    return response.data as any;
   },
 
   // 🔹 Eliminar empleado
   async eliminarEmpleado(id_negocio: number, id_empleado: number) {
     const response = await axiosInstance.delete(`/negocios/${id_negocio}/empleados/${id_empleado}`);
-    return response.data;
+    return response.data as any;
   },
 };
 
