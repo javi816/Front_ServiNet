@@ -1,91 +1,142 @@
-// authService.ts
+// src/services/authService.ts
 import axios from 'axios';
 import { ref } from 'vue';
 import router from '@/router';
-import { negocioService } from '@/services/negocioService'; // 👈 Importa el negocioService
+import { negocioService } from '@/services/negocioService';
 
 const API_URL = 'https://api-servi-net.onrender.com/api';
 
 export interface User {
-    id: number;
-    name: string;
-    email: string;
-    role: string;
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  profile_photo_url?: string;
 }
 
-interface LoginResponse {
-    access_token: string;
-    token_type: string;
-    user: User;
+interface AuthResponse {
+  access_token: string;
+  token_type: string;
+  user: User;
 }
 
-// Estado reactivo del usuario
-export const currentUser = ref<User | null>(JSON.parse(localStorage.getItem('user') || 'null'));
+export const currentUser = ref<User | null>(
+  JSON.parse(localStorage.getItem('user') || 'null')
+);
 
 export const authService = {
-    async login(email: string, password: string) {
-        const response = await axios.post<LoginResponse>(`${API_URL}/login`, {
-            email,
-            password,
-        });
+  // ✅ Guardar usuario formateado en localStorage
+  saveUser(user: any) {
+    const formattedUser = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role || 'usuario',
+      profile_photo_url: user.profile_photo_url || null,
+    };
 
-        const token = response.data.access_token;
-        const user = response.data.user;
+    localStorage.setItem('user', JSON.stringify(formattedUser));
+    currentUser.value = formattedUser;
+  },
 
-        // Guardar en localStorage
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(user));
+  // 🔹 REGISTRO
+  async register(
+    name: string,
+    email: string,
+    password: string,
+    password_confirmation: string
+  ) {
+    try {
+      const response = await axios.post<AuthResponse>(`${API_URL}/register`, {
+        name,
+        email,
+        password,
+        password_confirmation,
+      });
 
-        // Actualizar estado reactivo
-        currentUser.value = user;
+      const token = response.data.access_token;
+      const user = response.data.user;
 
-        // Intentar obtener el negocio del usuario (si tiene)
-        try {
-            const negocioData = await negocioService.getMiNegocio();
-            if (negocioData && negocioData.negocio) {
-                localStorage.setItem('negocio', JSON.stringify(negocioData));
-            } else {
-                localStorage.removeItem('negocio');
-            }
-        } catch (error) {
-            console.warn('Error al obtener el negocio del usuario:', error);
-            localStorage.removeItem('negocio');
+      // Guardar token y usuario
+      localStorage.setItem('token', token);
+      this.saveUser(user);
+
+      // Intentar obtener el negocio del usuario (si tiene)
+      try {
+        const negocioData = await negocioService.getMiNegocio();
+        if (negocioData && negocioData.negocio) {
+          localStorage.setItem('negocio', JSON.stringify(negocioData));
         }
+      } catch (error) {
+        console.warn('Error al obtener el negocio del usuario:', error);
+      }
 
-        return user;
-    },
+      return user;
+    } catch (error: any) {
+      console.error('Error en registro:', error.response?.data || error.message);
+      throw error.response?.data || { message: 'Error al registrarse' };
+    }
+  },
 
-    async logout() {
-        const token = this.getToken();
-        try {
-            await axios.post(`${API_URL}/logout`, {}, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-        } catch (error) {
-            console.error('Error al cerrar sesión:', error);
-        }
+  // 🔹 LOGIN
+  async login(email: string, password: string) {
+    const response = await axios.post<AuthResponse>(`${API_URL}/login`, {
+      email,
+      password,
+    });
 
-        // Limpiar todo
-        localStorage.clear();
-        currentUser.value = null;
+    const token = response.data.access_token;
+    const user = response.data.user;
 
-        // Redirigir al login
-        router.push({ name: 'Login' });
-    },
+    localStorage.setItem('token', token);
+    this.saveUser(user);
 
-    getToken() {
-        return localStorage.getItem('token');
-    },
+    try {
+      const negocioData = await negocioService.getMiNegocio();
+      if (negocioData && negocioData.negocio) {
+        localStorage.setItem('negocio', JSON.stringify(negocioData));
+      } else {
+        localStorage.removeItem('negocio');
+      }
+    } catch (error) {
+      console.warn('Error al obtener el negocio del usuario:', error);
+      localStorage.removeItem('negocio');
+    }
 
-    getUser() {
-        return currentUser.value;
-    },
+    return user;
+  },
 
-    // 👇 Nuevo helper para acceder al negocio guardado
-    getNegocio() {
-        const stored = localStorage.getItem('negocio');
-        return stored ? JSON.parse(stored) : null;
-    },
+  // 🔹 LOGOUT
+  async logout() {
+    const token = this.getToken();
+    try {
+      await axios.post(
+        `${API_URL}/logout`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
+
+    localStorage.clear();
+    currentUser.value = null;
+    router.push({ name: 'Login' });
+  },
+
+  // ✅ Obtener token del localStorage
+  getToken() {
+    return localStorage.getItem('token');
+  },
+
+  // ✅ Obtener usuario actual reactivo
+  getUser() {
+    return currentUser.value;
+  },
+
+  // ✅ Obtener negocio (si existe)
+  getNegocio() {
+    const stored = localStorage.getItem('negocio');
+    return stored ? JSON.parse(stored) : null;
+  },
 };

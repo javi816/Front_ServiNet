@@ -10,6 +10,7 @@ import MiNegocioView from '@/views/MiNegocioView.vue'
 import Debug from '@/views/Debug.vue'
 import SolicitudesView from '@/views/SolicitudesView.vue'
 import EmpleadoList from '@/views/EmpleadoList.vue'
+import RegisterView from '@/views/RegisterView.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -62,6 +63,16 @@ const routes: Array<RouteRecordRaw> = [
     name: 'Empleados',
     component: EmpleadoList,
   },
+  {
+  path: '/register',
+  name: 'Register',
+  component: RegisterView,
+  },
+  {
+  path: '/perfil',
+  name: 'Perfil',
+  component: () => import('@/views/PerfilView.vue'),
+  }
 ]
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
