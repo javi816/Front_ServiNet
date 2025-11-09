@@ -63,6 +63,7 @@ const routes: Array<RouteRecordRaw> = [
     path: '/empleados',
     name: 'Empleados',
     component: EmpleadoList,
+    meta: {requiresAuth: true}
   },
   {
   path: '/register',
@@ -73,6 +74,7 @@ const routes: Array<RouteRecordRaw> = [
   path: '/perfil',
   name: 'Perfil',
   component: () => import('@/views/PerfilView.vue'),
+  meta: {requiresAuth: true}
   },
   {
     path: '/servicios',
