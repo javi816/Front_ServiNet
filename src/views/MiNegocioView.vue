@@ -11,7 +11,7 @@
             <ion-spinner v-if="loading" name="crescent" />
 
             <!-- Sin negocio -->
-            <ion-button v-else-if="!negocio" @click="openModal" expand="block" color="primary">
+            <ion-button v-else-if="!negocio" @click="isModalOpen = true" expand="block" color="primary">
                 Solicitar Negocio
             </ion-button>
 
@@ -20,6 +20,9 @@
                 <ion-card-header>
                     <ion-card-title>{{ negocio.nombre }}</ion-card-title>
                     <ion-card-subtitle>Estado: {{ negocio.estado }}</ion-card-subtitle>
+                    <ion-card-subtitle>
+                        {{ rol === 'admin' ? 'Panel de Administración' : 'Panel de Empleado' }}
+                    </ion-card-subtitle>
                 </ion-card-header>
                 <ion-card-content>
                     <p>
@@ -40,6 +43,11 @@
                 <ion-card-content>
                     <template v-if="rol === 'admin'">
                         <p>Aquí podrás administrar servicios, empleados y solicitudes.</p>
+
+                        <!-- Botón para agregar servicio solo para admin -->
+                        <ion-button expand="block" color="secondary" @click="openAgregarServicioModal">
+                            Agregar Servicio
+                        </ion-button>
                     </template>
 
                     <template v-else-if="rol === 'empleado'">
@@ -48,9 +56,23 @@
                 </ion-card-content>
             </ion-card>
 
+            <!-- Servicios del negocio -->
+            <div class="servicios-container" v-if="servicios.length">
+                <ServicioCard v-for="servicio in servicios" :key="servicio.id_servicio" :servicio="servicio"
+                    @editar="openEditarServicioModal" @eliminar="eliminarServicio" @agendar="agendarServicio" />
+            </div>
+
+            <ion-text v-else class="ion-text-center">
+                <p>No hay servicios registrados.</p>
+            </ion-text>
+
             <!-- Modal para solicitar negocio -->
             <SolicitarNegocioModal :is-open="isModalOpen" @close="isModalOpen = false"
                 @solicitud-enviada="handleSolicitudEnviada" />
+
+            <!-- Modal para agregar/editar servicio -->
+            <AgregarServicioModal :is-open="isAgregarServicioModalOpen" :servicio="servicioSeleccionado"
+                @close="closeServicioModal" @servicio-agregado="handleServicioAgregado" />
         </ion-content>
     </ion-page>
 </template>
@@ -58,20 +80,67 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { negocioService, Negocio } from '@/services/negocioService'
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonSpinner } from '@ionic/vue'
+import { servicioService, type Servicio } from '@/services/servicioService'
+import ServicioCard from '@/components/ServicioCard.vue'
 import SolicitarNegocioModal from '@/components/SolicitarNegocioModal.vue'
+import AgregarServicioModal from '@/components/AgregarServicioModal.vue'
+import {
+    IonPage,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    IonButton,
+    IonCard,
+    IonCardHeader,
+    IonCardTitle,
+    IonCardSubtitle,
+    IonCardContent,
+    IonSpinner,
+    IonText,
+} from '@ionic/vue'
 
 const negocio = ref<Negocio | null>(null)
 const rol = ref<string | null>(null)
 const loading = ref(true)
 const isModalOpen = ref(false)
+const isAgregarServicioModalOpen = ref(false)
+const servicios = ref<Servicio[]>([])
+const cargandoServicios = ref(false)
 
-const openModal = () => {
-    isModalOpen.value = true
+// Modal editar/agregar
+const servicioSeleccionado = ref<Servicio | undefined>(undefined)
+
+const openAgregarServicioModal = () => {
+    servicioSeleccionado.value = undefined
+    isAgregarServicioModalOpen.value = true
+}
+
+const openEditarServicioModal = (servicio: Servicio) => {
+    servicioSeleccionado.value = servicio
+    isAgregarServicioModalOpen.value = true
+}
+
+const closeServicioModal = () => {
+    isAgregarServicioModalOpen.value = false
+    servicioSeleccionado.value = undefined
+}
+
+const handleServicioAgregado = (servicio: Servicio) => {
+    const index = servicios.value.findIndex(s => s.id_servicio === servicio.id_servicio)
+    if (index >= 0) {
+        // Actualiza servicio existente
+        servicios.value[index] = servicio
+    } else {
+        // Agrega nuevo servicio
+        servicios.value.push(servicio)
+    }
+    closeServicioModal()
 }
 
 const handleSolicitudEnviada = async () => {
     await fetchMiNegocio()
+    await cargarServicios()
     isModalOpen.value = false
 }
 
@@ -88,8 +157,37 @@ const fetchMiNegocio = async () => {
     }
 }
 
-onMounted(() => {
-    fetchMiNegocio()
+const cargarServicios = async () => {
+    try {
+        cargandoServicios.value = true
+        const lista = await servicioService.listar()
+        servicios.value = Array.isArray(lista) ? lista : []
+    } catch (e) {
+        servicios.value = []
+        console.error(e)
+    } finally {
+        cargandoServicios.value = false
+    }
+}
+const eliminarServicio = async (servicio: Servicio) => {
+    const confirmDelete = window.confirm(`¿Deseas eliminar el servicio "${servicio.nombre}"?`)
+    if (!confirmDelete) return
+
+    const exito = await servicioService.eliminar(servicio.id_servicio)
+    if (exito) {
+        // Eliminar del array local para que se actualice la UI
+        servicios.value = servicios.value.filter(s => s.id_servicio !== servicio.id_servicio)
+    }
+}
+
+
+// Handlers de los eventos de ServicioCard
+const editarServicio = (servicio: Servicio) => openEditarServicioModal(servicio)
+const agendarServicio = (servicio: Servicio) => console.log('Agendar cita:', servicio)
+
+onMounted(async () => {
+    await fetchMiNegocio()
+    await cargarServicios()
 })
 </script>
 

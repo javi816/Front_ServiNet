@@ -28,12 +28,12 @@
           <!-- Información personal -->
           <ion-item>
             <ion-label position="floating">Nombre</ion-label>
-            <ion-input v-model="user.name"></ion-input>
+            <ion-input v-model="user!.name"></ion-input>
           </ion-item>
 
           <ion-item>
             <ion-label position="floating">Correo</ion-label>
-            <ion-input v-model="user.email"></ion-input>
+            <ion-input v-model="user!.email"></ion-input>
           </ion-item>
 
           <ion-button expand="block" color="primary" @click="actualizarInfo" :disabled="loading">
@@ -117,8 +117,8 @@ const actualizarInfo = async () => {
   loading.value = true;
   try {
     const res = await axios.put<any>(`${API_URL}/profile/update-info`, {
-      name: user.value?.name,
-      email: user.value?.email,
+      name: user.value!.name,
+      email: user.value!.email,
     }, {
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -133,10 +133,10 @@ const actualizarInfo = async () => {
 // ✅ Actualizar foto de perfil
 const actualizarFoto = async (event: any) => {
   const file = event.target.files[0];
-  if (!file) return;
+  if (!file || !user.value) return;
 
   const formData = new FormData();
-  formData.append('profile_photo_url', file); // 👈 nombre correcto según backend
+  formData.append('profile_photo_url', file);
 
   try {
     const res = await axios.post<any>(`${API_URL}/profile/update-photo`, formData, {
@@ -148,7 +148,7 @@ const actualizarFoto = async (event: any) => {
 
     // ✅ Actualizamos foto visible y el usuario guardado localmente
     fotoActual.value = res.data.profile_photo_url;
-    user.value = { ...user.value, profile_photo_url: res.data.profile_photo_url };
+    user.value = { ...user.value, profile_photo_url: res.data.profile_photo_url } as typeof user.value;
 
     // ✅ Guardamos el nuevo usuario en el localStorage a través del authService
     authService.saveUser(user.value);
@@ -158,7 +158,6 @@ const actualizarFoto = async (event: any) => {
     toast.value = error.response?.data?.message || 'Error al actualizar foto';
   }
 };
-
 
 // ✅ Actualizar contraseña
 const actualizarPassword = async () => {

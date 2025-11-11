@@ -31,7 +31,7 @@ const props = defineProps<{
     negocio: Negocio;
 }>();
 
-const defaultImage = "/assets/default-business.png";
+const defaultImage = "/sin-imagen.svg";
 
 const onClick = () => {
     console.log("Negocio clickeado:", props.negocio.id);
