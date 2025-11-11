@@ -2,46 +2,40 @@
   <ion-page>
     <ion-header>
       <ion-toolbar color="tertiary">
-        <ion-title>Inicio</ion-title>
-
-        <!-- Botón de logout en el header -->
-        <ion-buttons slot="end">
-          <ion-button @click="handleLogout">
-            Cerrar Sesión
-          </ion-button>
+        <ion-buttons slot="start">
+          <!-- auto-hide="false" asegura que el botón aparezca aunque el menu esté oculto condicionalmente -->
+          <ion-menu-button auto-hide="false"></ion-menu-button>
         </ion-buttons>
+        <ion-title>Inicio</ion-title>
       </ion-toolbar>
     </ion-header>
 
     <ion-content class="ion-padding">
-      <!-- Mostrar datos del usuario -->
-      <ion-card v-if="user">
-        <ion-card-header>
-          <ion-card-title>¡Bienvenido!</ion-card-title>
-          <ion-card-subtitle>{{ user.name }}</ion-card-subtitle>
-        </ion-card-header>
-        <ion-card-content>
-          <p><strong>Email:</strong> {{ user.email }}</p>
-          <p><strong>Rol:</strong> {{ user.role || 'usuario' }}</p>
-        </ion-card-content>
-      </ion-card>
+      <div class="center-content">
+        <!-- Mostrar datos del usuario -->
+        <ion-card v-if="user">
+          <ion-card-header>
+            <ion-card-title>¡Bienvenido!</ion-card-title>
+            <ion-card-subtitle>{{ user.name }}</ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content>
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>Rol:</strong> {{ user.role || 'usuario' }}</p>
+          </ion-card-content>
+        </ion-card>
 
-      <!-- Botón para ir al Dashboard (solo si es admin) -->
-      <ion-button
-        v-if="isAdmin"
-        expand="block"
-        router-link="/dashboard"
-        color="primary"
-      >
-        Ir al Dashboard (Solo Admin)
-      </ion-button>
+        <!-- Botón para ir al Dashboard (solo si es admin) -->
+        <ion-button v-if="isAdmin" expand="block" router-link="/dashboard" color="primary">
+          Ir al Dashboard (Solo Admin)
+        </ion-button>
 
-      <!-- Si NO es admin, mostrar mensaje -->
-      <ion-card v-else>
-        <ion-card-content>
-          <p>No tienes acceso al Dashboard (solo para administradores)</p>
-        </ion-card-content>
-      </ion-card>
+        <!-- Si NO es admin, mostrar mensaje -->
+        <ion-card v-else>
+          <ion-card-content>
+            <p>No tienes acceso al Dashboard (solo para administradores)</p>
+          </ion-card-content>
+        </ion-card>
+      </div>
     </ion-content>
   </ion-page>
 </template>
@@ -59,9 +53,7 @@ import {
 const router = useRouter();
 const user = computed(() => currentUser.value);
 const isAdmin = computed(() => user.value?.role === 'admin');
-const handleLogout = async () => {
-  await authService.logout();
-};
+
 </script>
 
 <style scoped>
@@ -128,5 +120,43 @@ ion-card p {
   color: #aaa;
   margin: 10px 0;
 }
-</style>
 
+@media (min-width: 768px) {
+  .center-content{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  ion-title {
+    font-size: 1.8rem;
+  }
+
+  ion-content {
+    justify-content: center;
+    padding: 40px 0;
+  }
+
+  ion-card {
+    max-width: 520px;
+    padding: 25px;
+    margin-top: 0;
+  }
+
+  ion-card-title {
+    font-size: 1.6rem;
+  }
+
+  ion-card-subtitle {
+    font-size: 1rem;
+  }
+
+  ion-card-content p {
+    font-size: 1rem;
+  }
+
+  ion-button {
+    font-size: 1rem;
+    --border-radius: 12px;
+  }
+}
+</style>
