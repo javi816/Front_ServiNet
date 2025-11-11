@@ -39,15 +39,18 @@ import {
     IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel, IonThumbnail, IonRefresher, IonRefresherContent, IonText
 } from '@ionic/vue'
 import { ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { servicioService, type Servicio } from '@/services/servicioService'
 
 const servicios = ref<Servicio[]>([])
 const cargando = ref(false)
+const route = useRoute()
 
 const cargarServicios = async () => {
     try {
         cargando.value = true
-        const lista = await servicioService.listar()
+        const id_negocio = route.params.id_negocio as string
+        const lista = await servicioService.listarPorNegocio(id_negocio)
         servicios.value = Array.isArray(lista) ? lista : []
     } catch (e) {
         servicios.value = []

@@ -39,6 +39,19 @@ export const servicioService = {
         }
     },
 
+    // ✅ Nuevo método para listar servicios por negocio (para la vista pública)
+    async listarPorNegocio(id_negocio: number | string): Promise<Servicio[]> {
+        try {
+            const response = await axiosInstance.get<{ message: string; data: Servicio[] }>(
+                `/servicios/${id_negocio}`
+            )
+            return response.data.data ?? []
+        } catch (error) {
+            console.error('[servicioService] Error al listar servicios por negocio:', error)
+            return []
+        }
+    },
+
     async agregarConFoto(
         nombre: string,
         descripcion: string,
@@ -86,6 +99,7 @@ export const servicioService = {
             return null
         }
     },
+
     async editarConFoto(
         id: number,
         nombre: string,
@@ -127,6 +141,7 @@ export const servicioService = {
             return null
         }
     },
+
     async eliminar(id_servicio: number): Promise<boolean> {
         try {
             await axiosInstance.delete(`/servicios/${id_servicio}`)
@@ -139,5 +154,4 @@ export const servicioService = {
             return false
         }
     }
-
 }
