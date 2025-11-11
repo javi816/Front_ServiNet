@@ -2,7 +2,7 @@
 <template>
   <ion-page>
     <ion-header>
-      <ion-toolbar color="primary">
+      <ion-toolbar color="tertiary">
         <ion-title>Mi Perfil</ion-title>
       </ion-toolbar>
     </ion-header>
@@ -192,13 +192,120 @@ const togglePasswordSection = () => {
 </script>
 
 <style scoped>
+ion-content {
+  --background: #0d1117;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+  color: #e6edf3;
+}
+
+ion-title {
+  font-size: 1.4rem;
+}
+
+ion-card {
+  width: 90%;
+  max-width: 400px;
+  background: #161b22;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  border: 1px solid #21262d;
+}
+
+ion-card-header {
+  text-align: center;
+  border-bottom: 1px solid #21262d;
+}
+
+ion-card-title {
+  font-weight: 600;
+  color: #e6edf3;
+  font-size: 1.2rem;
+}
+
+/* ✅ Centrar avatar */
 ion-card-content {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
+
+ion-avatar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid #30363d;
+  overflow: hidden;
+  margin: 12px auto 16px auto;
+  transition: transform 0.2s;
+}
+
+ion-avatar:hover {
+  transform: scale(1.05);
+}
+
+/* ✅ Separación entre label e input */
+ion-item {
+  --background: transparent;
+  --color: #e6edf3;
+  border: 1px solid #30363d;
+  border-radius: 10px;
+  margin-top: 12px;
+  --highlight-color-focused: #58a6ff;
+}
+
+ion-label {
+  color: #8b949e;
+  margin-bottom: 4px;
+}
+
+ion-input {
+  color: #e6edf3;
+  margin-top: 15px;
+}
+
+ion-button {
+  margin-top: 16px;
+  border-radius: 10px;
+  font-weight: 500;
+  text-transform: none;
+}
+
+ion-button[color="primary"] {
+  --background: #238636;
+  --background-activated: #2ea043;
+  --background-hover: #2ea043;
+  color: #fff;
+}
+
+ion-button[color="secondary"] {
+  --border-color: #58a6ff;
+  color: #58a6ff;
+}
+
+ion-button[color="success"] {
+  --background: #1f6feb;
+  --background-activated: #316dca;
+  color: #fff;
+}
+
+.mt-3 {
+  margin-top: 1rem;
+}
+
 .error-text {
-  color: #f44336;
+  color: #f85149;
   text-align: center;
+  margin-top: 8px;
+}
+
+ion-toast {
+  --background: #161b22;
+  --color: #e6edf3;
+  border: 1px solid #30363d;
+  border-radius: 10px;
 }
 </style>
+

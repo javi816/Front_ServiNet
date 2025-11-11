@@ -1,7 +1,7 @@
 <template>
     <ion-page>
         <ion-header>
-            <ion-toolbar>
+            <ion-toolbar color="tertiary">
                 <ion-title>Solicitudes de Negocios</ion-title>
             </ion-toolbar>
         </ion-header>
@@ -39,3 +39,60 @@ onMounted(() => {
     cargarSolicitudes();
 });
 </script>
+
+<style scoped>
+ion-content {
+  --background: #0d1117;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+  color: #e6edf3;
+}
+
+ion-title {
+  font-size: 1.4rem;
+}
+
+ion-list{
+    background: #161b22;
+}
+
+ion-card {
+  width: 90%;
+  max-width: 400px;
+  background: #161b22;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  border: 1px solid #21262d;
+}
+
+ion-card-header {
+  text-align: center;
+  border-bottom: 1px solid #21262d;
+}
+
+ion-card-title {
+  font-weight: 600;
+  color: #e6edf3;
+  font-size: 1.2rem;
+}
+
+
+.mt-3 {
+  margin-top: 1rem;
+}
+
+.error-text {
+  color: #f85149;
+  text-align: center;
+  margin-top: 8px;
+}
+
+ion-toast {
+  --background: #161b22;
+  --color: #e6edf3;
+  border: 1px solid #30363d;
+  border-radius: 10px;
+}
+</style>
