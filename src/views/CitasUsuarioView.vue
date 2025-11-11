@@ -1,6 +1,6 @@
 <template>
     <div>
-<h1>Citas</h1>
+<h1>Citas usuario</h1>
     </div>
 </template>
 
