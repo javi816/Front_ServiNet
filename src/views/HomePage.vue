@@ -1,7 +1,7 @@
 <template>
   <ion-page>
     <ion-header>
-      <ion-toolbar>
+      <ion-toolbar color="tertiary">
         <ion-title>Inicio</ion-title>
 
         <!-- Botón de logout en el header -->
@@ -65,7 +65,68 @@ const handleLogout = async () => {
 </script>
 
 <style scoped>
+ion-page {
+  --background: #0d1117;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+ion-title {
+  font-size: 1.4rem;
+}
+
+ion-content {
+  --background: #0d1117;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 20px;
+}
+
 ion-card {
-  margin-top: 16px;
+  background: #161b22;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  border: 1px solid #21262d;
+  width: 90%;
+  max-width: 400px;
+  color: #fff;
+  text-align: center;
+  margin-top: 25px;
+}
+
+ion-card-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+ion-card-subtitle {
+  color: #90caf9;
+  font-size: 0.9rem;
+}
+
+ion-card-content p {
+  color: #ccc;
+  margin: 5px 0;
+  font-size: 0.95rem;
+}
+
+ion-button {
+  --background: #2372b8;
+  --background-hover: #42a5f5;
+  --color: #000000;
+  --border-radius: 10px;
+  font-weight: 600;
+  width: 100%;
+  max-width: 400px;
+}
+
+ion-card p {
+  color: #aaa;
+  margin: 10px 0;
 }
 </style>
+

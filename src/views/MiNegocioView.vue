@@ -1,7 +1,7 @@
 <template>
     <ion-page>
         <ion-header>
-            <ion-toolbar>
+            <ion-toolbar color="tertiary">
                 <ion-title>Mi Negocio</ion-title>
             </ion-toolbar>
         </ion-header>
@@ -92,3 +92,76 @@ onMounted(() => {
     fetchMiNegocio()
 })
 </script>
+
+<style scoped>
+ion-content {
+  --background: #0d1117;
+  color: #e6edf3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+
+
+ion-title {
+  font-weight: 600;
+}
+
+/* Spinner centrado */
+ion-spinner {
+  display: block;
+  margin: 60px auto;
+  color: #58a6ff;
+}
+
+/* Tarjeta */
+ion-card {
+  width: 90%;
+  max-width: 420px;
+  background: #161b22;
+  border-radius: 16px;
+  border: 1px solid #30363d;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  color: #e6edf3;
+}
+
+ion-card-header {
+  border-bottom: 1px solid #21262d;
+}
+
+ion-card-title {
+  color: #e6edf3;
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+ion-card-subtitle {
+  color: #8b949e;
+}
+
+/* Botones */
+ion-button {
+  --border-radius: 10px;
+  font-weight: 500;
+  text-transform: none;
+  margin-top: 20px;
+}
+
+ion-button[color="primary"] {
+  --background: #238636;
+  --background-hover: #2ea043;
+  --background-activated: #2ea043;
+}
+
+p {
+  color: #e6edf3;
+  text-align: center;
+  line-height: 1.5;
+}
+
+strong {
+  color: #58a6ff;
+}
+</style>

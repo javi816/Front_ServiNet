@@ -170,7 +170,80 @@ onMounted(cargarEmpleados);
 </script>
 
 <style scoped>
-.text-center {
+ion-page {
+  --background: #0d1117;
+  color: #ffffff;
+}
+
+ion-header {
+  --background: #0d1117;
+  border-bottom: 1px solid #2c2c2c;
+}
+
+ion-toolbar {
+  --color: #ffffff;
+  --background: #0d1117;
   text-align: center;
 }
+
+ion-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+ion-content {
+  --background: #0d1117;
+  padding: 20px;
+}
+
+ion-item {
+  --background: rgba(40, 40, 40, 0.9);
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+
+ion-input {
+  color: #ffffff;
+}
+
+ion-label {
+  color: #bdbdbd;
+}
+
+ion-list-header {
+  color: #90caf9;
+  font-weight: 600;
+  margin-top: 15px;
+}
+
+ion-list {
+  background: transparent;
+}
+
+ion-button {
+  --border-radius: 10px;
+  font-weight: 600;
+  margin-left: 8px;
+}
+
+ion-button[color="success"] {
+  --background: #2e7d32;
+  --background-hover: #43a047;
+}
+
+ion-button[color="danger"] {
+  --background: #c62828;
+  --background-hover: #e53935;
+}
+
+ion-label[color="medium"] {
+  color: #aaa !important;
+}
+
+.text-center {
+  text-align: center;
+  margin-top: 20px;
+  color: #bdbdbd;
+}
 </style>
+
