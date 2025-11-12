@@ -3,7 +3,6 @@ import axiosInstance from '@/services/axiosInstance'
 export interface Negocio {
     id: number
     nombre: string
-    descripcion: string            // 🔹 Campo agregado
     direccion: string
     telefono: string
     correo: string
@@ -15,7 +14,6 @@ export interface Negocio {
 
 export interface NegocioSolicitud {
     nombre: string
-    descripcion: string            // 🔹 Campo agregado
     direccion: string
     telefono: string
     correo: string

@@ -1,114 +1,69 @@
 <template>
-  <ion-modal :is-open="isOpen" @did-dismiss="closeModal">
-    <ion-header>
-      <ion-toolbar color="tertiary">
-        <ion-title>Solicitar Negocio</ion-title>
-        <ion-buttons slot="end">
-          <ion-button @click="closeModal">Cerrar</ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
+    <ion-modal :is-open="isOpen" @did-dismiss="closeModal">
+        <ion-header>
+            <ion-toolbar>
+                <ion-title>Solicitar Negocio</ion-title>
+                <ion-buttons slot="end">
+                    <ion-button @click="closeModal">Cerrar</ion-button>
+                </ion-buttons>
+            </ion-toolbar>
+        </ion-header>
 
-    <ion-content class="ion-padding">
-      <div class="center-container">
-        <form @submit.prevent="handleSubmit">
-          <p>Ingresa los datos de tu negocio</p>
+        <ion-content class="ion-padding">
+            <form @submit.prevent="handleSubmit">
+                <ion-item>
+                    <ion-label position="floating">Nombre</ion-label>
+                    <ion-input v-model="nombre" required></ion-input>
+                </ion-item>
 
-          <!-- Nombre -->
-          <ion-input
-            label="Nombre del negocio"
-            label-placement="floating"
-            fill="outline"
-            v-model="nombre"
-            required
-          ></ion-input>
+                <ion-item>
+                    <ion-label position="floating">Dirección</ion-label>
+                    <ion-input v-model="direccion" required></ion-input>
+                </ion-item>
 
-          <!-- Descripción -->
-          <ion-textarea
-            label="Descripción"
-            label-placement="floating"
-            fill="outline"
-            auto-grow
-            v-model="descripcion"
-            required
-          ></ion-textarea>
+                <ion-item>
+                    <ion-label position="floating">Teléfono</ion-label>
+                    <ion-input v-model="telefono" required></ion-input>
+                </ion-item>
 
-          <!-- Dirección -->
-          <ion-input
-            label="Dirección"
-            label-placement="floating"
-            fill="outline"
-            v-model="direccion"
-            required
-          ></ion-input>
+                <ion-item>
+                    <ion-label position="floating">Correo</ion-label>
+                    <ion-input v-model="correo" type="email" required></ion-input>
+                </ion-item>
 
-          <!-- Teléfono -->
-          <ion-input
-            label="Teléfono"
-            label-placement="floating"
-            fill="outline"
-            type="tel"
-            v-model="telefono"
-            required
-          ></ion-input>
+                <ion-item>
+                    <ion-label position="floating">Foto (URL)</ion-label>
+                    <ion-input v-model="foto"></ion-input>
+                </ion-item>
 
-          <!-- Correo -->
-          <ion-input
-            label="Correo electrónico"
-            label-placement="floating"
-            fill="outline"
-            type="email"
-            v-model="correo"
-            required
-          ></ion-input>
+                <ion-text color="danger" v-if="errorMessage">
+                    <p>{{ errorMessage }}</p>
+                </ion-text>
 
-          <!-- Foto -->
-          <ion-input
-            label="Foto (URL opcional)"
-            label-placement="floating"
-            fill="outline"
-            v-model="foto"
-          ></ion-input>
-
-          <!-- Error -->
-          <ion-text color="danger" v-if="errorMessage">
-            <p>{{ errorMessage }}</p>
-          </ion-text>
-
-          <!-- Botón principal -->
-          <ion-button expand="block" type="submit" :disabled="loading" class="ion-margin-top">
-            {{ loading ? 'Enviando...' : 'Enviar Solicitud' }}
-          </ion-button>
-        </form>
-      </div>
-    </ion-content>
-  </ion-modal>
+                <ion-button expand="block" type="submit" :disabled="loading" class="ion-margin-top">
+                    {{ loading ? "Enviando..." : "Enviar Solicitud" }}
+                </ion-button>
+            </form>
+        </ion-content>
+    </ion-modal>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { negocioService, type NegocioSolicitud } from '@/services/negocioService'
+import { negocioService, NegocioSolicitud } from '@/services/negocioService'
 import {
-  IonModal,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonButtons,
-  IonButton,
-  IonContent,
-  IonInput,
-  IonTextarea,
-  IonText,
+    IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
+    IonButtons, IonButton, IonCard, IonCardHeader, IonCardTitle,
+    IonCardSubtitle, IonCardContent, IonModal, IonItem, IonLabel, IonInput, IonText
 } from '@ionic/vue'
 
 const props = defineProps<{ isOpen: boolean }>()
 const emit = defineEmits<{
-  (e: 'close'): void
-  (e: 'solicitud-enviada', negocio: any): void
+    (e: 'close'): void
+    (e: 'solicitud-enviada', negocio: any): void
 }>()
 
 const nombre = ref('')
-const descripcion = ref('') // 🔹 Nuevo campo
 const direccion = ref('')
 const telefono = ref('')
 const correo = ref('')
@@ -116,79 +71,38 @@ const foto = ref('')
 const loading = ref(false)
 const errorMessage = ref('')
 
-const closeModal = () => emit('close')
+const closeModal = () => {
+    emit('close')
+}
 
 const handleSubmit = async () => {
-  errorMessage.value = ''
-  loading.value = true
+    errorMessage.value = ''
+    loading.value = true
 
-  try {
-    const solicitud: NegocioSolicitud = {
-      nombre: nombre.value,
-      descripcion: descripcion.value, // 🔹 Se envía también
-      direccion: direccion.value,
-      telefono: telefono.value,
-      correo: correo.value,
-      foto: foto.value || undefined,
+    try {
+        const solicitud: NegocioSolicitud = {
+            nombre: nombre.value,
+            direccion: direccion.value,
+            telefono: telefono.value,
+            correo: correo.value,
+            foto: foto.value || undefined,
+        }
+
+        const response = await negocioService.solicitarNegocio(solicitud)
+
+        emit('solicitud-enviada', response.negocio)
+        closeModal()
+    } catch (error: any) {
+        errorMessage.value = error.message || 'Error al enviar la solicitud'
+    } finally {
+        loading.value = false
     }
-
-    const response = await negocioService.solicitarNegocio(solicitud)
-    emit('solicitud-enviada', response.negocio)
-    closeModal()
-  } catch (error: any) {
-    errorMessage.value = error.message || 'Error al enviar la solicitud'
-  } finally {
-    loading.value = false
-  }
 }
 </script>
 
 <style scoped>
-ion-content {
-  --background: #0d1117;
-}
-
-p {
-  color: white;
-  font-size: x-large;
-}
-
-.center-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 2%;
-  box-sizing: border-box;
-  gap: 2vh;
-}
-
-form {
-  background: #161b22;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  border: 1px solid #21262d;
-  padding: 35px 25px;
-  width: 100%;
-  max-width: 400px;
-  text-align: center;
-}
-
-ion-input,
-ion-textarea {
-  --background: #0d1117;
-  --color: #ffffff;
-  --placeholder-color: #999;
-  --border-color: #30363d;
-  --highlight-color-focused: #4da3ff;
-  margin-bottom: 16px;
-}
-
 ion-text p {
-  margin-top: 8px;
-  color: #ff6b6b;
-}
-
-ion-button {
-  margin-top: 12px;
+    padding: 10px;
+    margin-top: 10px;
 }
 </style>
