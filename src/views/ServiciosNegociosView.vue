@@ -24,6 +24,11 @@
                         <p>{{ servicio.descripcion }}</p>
                         <p><strong>Precio:</strong> ${{ servicio.precio }}</p>
                     </ion-label>
+
+                    <!-- Botón para solicitar cita -->
+                    <ion-button slot="end" color="primary" @click="solicitarCita(servicio)">
+                        Solicitar cita
+                    </ion-button>
                 </ion-item>
             </ion-list>
 
@@ -36,21 +41,24 @@
 
 <script setup lang="ts">
 import {
-    IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel, IonThumbnail, IonRefresher, IonRefresherContent, IonText
+    IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonLabel, IonThumbnail,
+    IonRefresher, IonRefresherContent, IonText, IonButton
 } from '@ionic/vue'
 import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
 import { servicioService, type Servicio } from '@/services/servicioService'
+import { useRouter, useRoute } from 'vue-router'
+
+const router = useRouter()
+const route = useRoute()
 
 const servicios = ref<Servicio[]>([])
 const cargando = ref(false)
-const route = useRoute()
+const id_negocio = ref(route.params.id_negocio) // obtiene el ID del negocio desde la URL
 
 const cargarServicios = async () => {
     try {
         cargando.value = true
-        const id_negocio = route.params.id_negocio as string
-        const lista = await servicioService.listarPorNegocio(id_negocio)
+        const lista = await servicioService.listarPorNegocio(id_negocio.value) // usa el ID del negocio
         servicios.value = Array.isArray(lista) ? lista : []
     } catch (e) {
         servicios.value = []
@@ -62,6 +70,14 @@ const cargarServicios = async () => {
 const onRefresher = async (event: any) => {
     await cargarServicios()
     event.detail?.complete()
+}
+
+// Redirige a la vista de citas
+const solicitarCita = (servicio: Servicio) => {
+    router.push({
+        name: 'citas-usuario',
+        query: { id_servicio: servicio.id_servicio }
+    })
 }
 
 onMounted(cargarServicios)

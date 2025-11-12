@@ -10,6 +10,7 @@ export interface Usuario {
 export interface Negocio {
     id: number
     nombre: string
+    descripcion: string   // 🆕 agregado
     direccion: string
     telefono: string
     correo: string
