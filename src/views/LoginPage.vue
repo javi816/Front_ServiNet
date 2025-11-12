@@ -50,8 +50,6 @@ import {
   IonToolbar,
   IonTitle,
   IonContent,
-  IonItem,
-  IonLabel,
   IonInput,
   IonButton,
   IonText,
