@@ -2,7 +2,11 @@
 <template>
   <ion-page>
     <ion-header>
-      <ion-toolbar>
+      <ion-toolbar color="tertiary">
+        <ion-buttons slot="start">
+            <!-- auto-hide="false" asegura que el botón aparezca aunque el menu esté oculto condicionalmente -->
+            <ion-menu-button auto-hide="false"></ion-menu-button>
+        </ion-buttons>
         <ion-title>Gestión de Empleados</ion-title>
       </ion-toolbar>
     </ion-header>
@@ -96,6 +100,8 @@ import {
   IonList,
   IonListHeader,
   IonLabel,
+  IonButtons,
+
 } from "@ionic/vue";
 import empleadoService from "@/services/empleadoService";
 import EmpleadoModalComponent from "@/components/EmpleadoModalComponent.vue";

@@ -3,6 +3,10 @@
   <ion-page>
     <ion-header>
       <ion-toolbar color="tertiary">
+        <ion-buttons slot="start">
+            <!-- auto-hide="false" asegura que el botón aparezca aunque el menu esté oculto condicionalmente -->
+            <ion-menu-button auto-hide="false"></ion-menu-button>
+        </ion-buttons>
         <ion-title>Mi Perfil</ion-title>
       </ion-toolbar>
     </ion-header>
@@ -86,7 +90,7 @@ import {
   IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
   IonCard, IonCardHeader, IonCardTitle, IonCardContent,
   IonButton, IonInput, IonItem, IonLabel, IonAvatar,
-  IonIcon, IonToast, IonSpinner
+  IonIcon, IonToast, IonSpinner, IonButtons
 } from '@ionic/vue';
 import { ref } from 'vue';
 import axios from 'axios';
