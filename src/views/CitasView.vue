@@ -15,10 +15,7 @@
                 <!-- Segment solo para empleados/admin con negocio -->
                 <ion-segment v-if="!esCliente" v-model="segment">
                     <ion-segment-button value="pendientes">
-                        Pendientes
-                    </ion-segment-button>
-                    <ion-segment-button value="aprobadas">
-                        Aprobadas
+                        Citas
                     </ion-segment-button>
                 </ion-segment>
 

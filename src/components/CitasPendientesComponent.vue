@@ -27,7 +27,7 @@
             </ion-list>
 
             <ion-text v-else color="medium">
-                No hay citas pendientes.
+                No hay citas pendientes que responder.
             </ion-text>
         </ion-card-content>
     </ion-card>
