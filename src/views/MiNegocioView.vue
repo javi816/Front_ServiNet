@@ -70,7 +70,7 @@
 
                 <!-- Servicios del negocio -->
                 <div class="servicios-container" v-if="servicios.length">
-                    <ServicioCard v-for="servicio in servicios" :key="servicio.id_servicio" :servicio="servicio"
+                    <ServicioCard v-for="servicio in servicios" :key="servicio.id" :servicio="servicio"
                         @editar="openEditarServicioModal" @eliminar="eliminarServicio" @agendar="agendarServicio" />
                 </div>
 
@@ -141,7 +141,7 @@ const closeServicioModal = () => {
 }
 
 const handleServicioAgregado = (servicio: Servicio) => {
-    const index = servicios.value.findIndex(s => s.id_servicio === servicio.id_servicio)
+    const index = servicios.value.findIndex(s => s.id === servicio.id)
     if (index >= 0) {
         // Actualiza servicio existente
         servicios.value[index] = servicio
@@ -187,10 +187,10 @@ const eliminarServicio = async (servicio: Servicio) => {
     const confirmDelete = window.confirm(`¿Deseas eliminar el servicio "${servicio.nombre}"?`)
     if (!confirmDelete) return
 
-    const exito = await servicioService.eliminar(servicio.id_servicio)
+    const exito = await servicioService.eliminar(servicio.id)
     if (exito) {
         // Eliminar del array local para que se actualice la UI
-        servicios.value = servicios.value.filter(s => s.id_servicio !== servicio.id_servicio)
+        servicios.value = servicios.value.filter(s => s.id !== servicio.id)
     }
 }
 

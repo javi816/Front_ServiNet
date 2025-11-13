@@ -112,7 +112,7 @@ const submitForm = async () => {
         if (props.servicio) {
             // Editar servicio existente
             servicio = await servicioService.editarConFoto(
-                props.servicio.id_servicio,
+                props.servicio.id,
                 nombre.value,
                 descripcion.value,
                 precio.value,
