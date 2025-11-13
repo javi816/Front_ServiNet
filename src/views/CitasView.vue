@@ -2,6 +2,10 @@
     <ion-page>
         <ion-header>
             <ion-toolbar>
+                <ion-buttons slot="start">
+                    <!-- auto-hide="false" asegura que el botón aparezca aunque el menu esté oculto condicionalmente -->
+                    <ion-menu-button auto-hide="false"></ion-menu-button>
+                </ion-buttons>
                 <ion-title>Gestión de Citas</ion-title>
             </ion-toolbar>
         </ion-header>
@@ -43,7 +47,9 @@ import {
     IonContent,
     IonSegment,
     IonSegmentButton,
-    IonText
+    IonText, 
+    IonButtons,
+    IonMenuButton
 } from '@ionic/vue'
 import CitasPendientesComponent from '@/components/CitasPendientesComponent.vue'
 import CitasAprobadasComponent from '@/components/citasAprobadasComponent.vue'

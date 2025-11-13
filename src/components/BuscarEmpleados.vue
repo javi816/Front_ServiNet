@@ -17,7 +17,6 @@
                 </ion-avatar>
                 <ion-label>
                     <h2>{{ empleado.nombre }}</h2>
-                    <p>{{ empleado.telefono || 'Sin teléfono' }}</p>
                     <ion-text color="medium">{{ empleado.rol }}</ion-text>
                 </ion-label>
             </ion-item>
