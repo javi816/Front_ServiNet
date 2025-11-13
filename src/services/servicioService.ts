@@ -4,7 +4,6 @@ import { authService } from './authService'
 
 export interface Servicio {
     id?: number,
-    id_servicio?: number
     id_negocio: number
     nombre: string
     descripcion: string
@@ -82,7 +81,7 @@ export const servicioService = {
                 formData.append('foto', foto)
 
                 const fotoResponse = await axiosInstance.post<{ message: string; foto_url: string }>(
-                    `/servicios/${servicioCreado.id_servicio}/foto`,
+                    `/servicios/${servicioCreado.id}/foto`,
                     formData,
                     {
                         headers: { 'Content-Type': 'multipart/form-data' },
@@ -143,9 +142,9 @@ export const servicioService = {
         }
     },
 
-    async eliminar(id_servicio: number): Promise<boolean> {
+    async eliminar(id: number): Promise<boolean> {
         try {
-            await axiosInstance.delete(`/servicios/${id_servicio}`)
+            await axiosInstance.delete(`/servicios/${id}`)
             return true
         } catch (error: any) {
             console.error('[servicioService] Error al eliminar servicio:', error)
