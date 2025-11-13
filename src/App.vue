@@ -3,15 +3,18 @@
     <!-- Menu: se renderiza solo si showMenu es true -->
     <ion-menu content-id="main-content" v-if="showMenu">
       <ion-header>
-        <ion-toolbar color="primary">
+        <ion-toolbar color="tertiary">
           <ion-title>Menú</ion-title>
         </ion-toolbar>
       </ion-header>
 
       <ion-content class="ion-padding">
-          <ion-button shape="round" fill="clear" expand="block" router-link="/negocios-feed">Negocios</ion-button>
-          <ion-button shape="round" fill="clear" expand="block" router-link="/mi-negocio">Mi Negocio</ion-button>
-          <ion-button shape="round" fill="clear" expand="block"  @click="handleLogout">Cerrar Sesion</ion-button>
+          <ion-button color="tertiary" shape="round" fill="clear" expand="block" router-link="/home">Home</ion-button>
+          <ion-button color="tertiary" shape="round" fill="clear" expand="block" router-link="/negocios-feed">Negocios</ion-button>
+          <ion-button color="tertiary" shape="round" fill="clear" expand="block" router-link="/mi-negocio">Mi Negocio</ion-button>
+          <ion-button color="tertiary" shape="round" fill="clear" expand="block" router-link="/empleados">Empleados</ion-button>
+          <ion-button color="tertiary" shape="round" fill="clear" expand="block" router-link="/perfil">Mi Perfil</ion-button>
+          <ion-button color="tertiary" shape="round" fill="clear" expand="block"  @click="handleLogout">Cerrar Sesion</ion-button>
       </ion-content>
     </ion-menu>
 

@@ -21,6 +21,7 @@
           <ion-card-content>
             <p><strong>Email:</strong> {{ user.email }}</p>
             <p><strong>Rol:</strong> {{ user.role || 'usuario' }}</p>
+            <ion-button color="tertiary" shape="round" fill="clear" expand="block" router-link="/negocios-feed">Ver Todos Los Negocios</ion-button>
           </ion-card-content>
         </ion-card>
 
@@ -114,6 +115,8 @@ ion-button {
   font-weight: 600;
   width: 100%;
   max-width: 400px;
+  display: flex;
+  align-items: center;
 }
 
 ion-card p {
