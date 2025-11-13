@@ -35,7 +35,6 @@ import { ref, watch } from 'vue'
 import { IonButton, IonList, IonItem, IonAvatar, IonLabel, IonText, IonInput } from '@ionic/vue'
 import axiosInstance from '@/services/axiosInstance'
 
-// ✅ Props (no modificables directamente)
 const props = defineProps<{
     idNegocio: number | null
     idServicio?: number | null
@@ -43,19 +42,15 @@ const props = defineProps<{
     hora: string
 }>()
 
-// ✅ Copia local de fecha (para evitar el error)
 const fechaLocal = ref(props.fecha)
 
-// Mantener sincronización si el padre cambia la fecha
 watch(() => props.fecha, nuevaFecha => {
     fechaLocal.value = nuevaFecha
 })
 
-// Variables reactivas
 const empleados = ref<any[]>([])
 const buscado = ref(false)
 
-// 🔹 Función para buscar empleados disponibles
 const buscarEmpleados = async () => {
     if (!fechaLocal.value || !props.hora) return
 
@@ -69,7 +64,6 @@ const buscarEmpleados = async () => {
 
         console.log('Respuesta completa:', response.data)
 
-        // ✅ Aseguramos que sea el array correcto
         empleados.value = response.data.data || []
         console.log('Empleados encontrados:', empleados.value)
     } catch (error) {
