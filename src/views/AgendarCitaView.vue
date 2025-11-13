@@ -1,173 +1,144 @@
 <template>
-    <ion-card>
-        <ion-card-header>
-            <ion-card-title>Citas Aprobadas</ion-card-title>
-        </ion-card-header>
+    <ion-page>
+        <ion-header>
+            <ion-toolbar>
+                <ion-title>Agendar Cita</ion-title>
+            </ion-toolbar>
+        </ion-header>
 
-        <ion-card-content>
-            <ion-list v-if="citas.length">
-                <ion-item v-for="cita in citas" :key="cita.id">
-                    <ion-label>
-                        <h2>{{ cita.servicio?.nombre }}</h2>
-                        <p>
-                            {{ cita.fecha }} — {{ cita.hora_inicio }} <br />
-                        </p>
-                    </ion-label>
+        <ion-content class="ion-padding">
 
-                    <ion-button size="small" fill="outline" color="primary" @click="abrirModal(cita)">
-                        Editar
-                    </ion-button>
+            <!-- Fecha y hora -->
+            <ion-item>
+                <ion-label position="stacked">Fecha</ion-label>
+                <ion-input type="date" v-model="fecha"></ion-input>
+            </ion-item>
 
-                    <ion-button size="small" fill="outline" color="danger" @click="cancelarCita(cita)">
-                        Cancelar
-                    </ion-button>
-                </ion-item>
-            </ion-list>
+            <ion-item>
+                <ion-label position="stacked">Hora</ion-label>
+                <ion-input type="time" v-model="hora"></ion-input>
+            </ion-item>
 
-            <ion-text v-else color="medium">No hay citas aprobadas.</ion-text>
-        </ion-card-content>
+            <!-- 🔹 Buscar empleados (cuando rol está vacío, o sea cliente) -->
+            <div v-if="rol === ''">
+                <BuscarEmpleados
+                    :idNegocio="idNegocio"
+                    :idServicio="idServicio"
+                    :fecha="fecha"
+                    :hora="hora"
+                    @seleccionado="empleadoSeleccionado = $event"
+                />
+            </div>
 
-        <!-- Modal Editar -->
-        <ion-modal :is-open="modalOpen" @did-dismiss="cerrarModal">
-            <ion-header>
-                <ion-toolbar>
-                    <ion-title>Editar Cita</ion-title>
-                    <ion-buttons slot="end">
-                        <ion-button @click="cerrarModal">Cerrar</ion-button>
-                    </ion-buttons>
-                </ion-toolbar>
-            </ion-header>
+            <!-- 🔹 Si es empleado, elegir tipo de cliente -->
+            <div v-else>
+                <ion-segment v-model="tipoCliente">
+                    <ion-segment-button value="registrado">Registrado</ion-segment-button>
+                    <ion-segment-button value="invitado">Invitado</ion-segment-button>
+                </ion-segment>
 
-            <ion-content class="ion-padding">
-                <ion-item>
-                    <ion-label position="stacked">Fecha</ion-label>
-                    <ion-datetime v-model="modalData.fecha" display-format="YYYY-MM-DD"
-                        presentation="date"></ion-datetime>
-                </ion-item>
+                <div v-if="tipoCliente === 'registrado'">
+                    <BuscarUsuarios @seleccionado="usuarioSeleccionado = $event" />
+                </div>
 
-                <ion-item>
-                    <ion-label position="stacked">Hora de inicio</ion-label>
-                    <ion-datetime v-model="modalData.hora_inicio" display-format="HH:mm"
-                        presentation="time"></ion-datetime>
-                </ion-item>
+                <div v-else>
+                    <ion-item>
+                        <ion-label position="stacked">Nombre del cliente (invitado)</ion-label>
+                        <ion-input v-model="nombreInvitado"></ion-input>
+                    </ion-item>
+                </div>
+            </div>
 
-                <ion-button expand="block" color="success" @click="guardarCambios">
-                    Guardar cambios
-                </ion-button>
-            </ion-content>
-        </ion-modal>
-    </ion-card>
+            <ion-button expand="block" color="success" @click="guardarCita">
+                Agendar Cita
+            </ion-button>
+        </ion-content>
+    </ion-page>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import axiosInstance from '@/services/axiosInstance'
-import { citasService, type Cita } from '@/services/citasService'
+import { useRoute } from 'vue-router'
 import {
-    IonCard,
-    IonCardHeader,
-    IonCardTitle,
-    IonCardContent,
-    IonList,
-    IonItem,
-    IonLabel,
-    IonButton,
-    IonModal,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonButtons,
-    IonContent,
-    IonDatetime,
-    IonText
+    IonPage, IonHeader, IonToolbar, IonTitle, IonContent,
+    IonItem, IonLabel, IonInput, IonButton, IonSegment, IonSegmentButton
 } from '@ionic/vue'
+import { negocioService } from '@/services/negocioService'
+import BuscarEmpleados from '@/components/BuscarEmpleados.vue'
+import BuscarUsuarios from '@/components/BuscarUsuarios.vue'
+import axiosInstance from '@/services/axiosInstance'
 
-const citas = ref<Cita[]>([])
-const modalOpen = ref(false)
-const modalData = ref<any>({
-    id: 0,
-    id_empleado: 0,
-    id_servicio: 0,
-    id_negocio: 0,
-    fecha: '',
-    hora_inicio: ''
+// Ruta y params
+const route = useRoute()
+const idNegocio = ref<number | null>(null)
+const idServicio = ref<number | null>(null)
+
+onMounted(() => {
+    idNegocio.value = Number(route.params.id_negocio)
+    idServicio.value = Number(route.params.id_servicio)
 })
 
-const cargarCitas = async () => {
-    try {
-        citas.value = await citasService.getCitasAprobadas()
-    } catch (error) {
-        console.error('Error al cargar citas:', error)
+// Rol e id del empleado (si aplica)
+const rol = negocioService.getRol() || ''
+const idEmpleado = negocioService.getIdEmpleado()
+
+// Formulario
+const fecha = ref('')
+const hora = ref('')
+const tipoCliente = ref<'registrado' | 'invitado'>('registrado')
+const empleadoSeleccionado = ref<any>(null)
+const usuarioSeleccionado = ref<any>(null)
+const nombreInvitado = ref('')
+
+// Guardar cita
+const guardarCita = async () => {
+    if (!idNegocio.value || !idServicio.value) {
+        alert('ID de negocio o servicio inválido')
+        return
     }
-}
 
-onMounted(cargarCitas)
-
-const abrirModal = (cita: any) => {
-    modalData.value = {
-        id: cita.id,
-        id_empleado: cita.usuario_negocio.id,
-        id_servicio: cita.servicio.id,
-        id_negocio: cita.id_negocio, // 🔹 Usamos id_negocio directamente
-        fecha: cita.fecha,
-        hora_inicio: cita.hora_inicio
+    if (!fecha.value || !hora.value) {
+        alert('Debes seleccionar fecha y hora')
+        return
     }
-    modalOpen.value = true
-}
 
-const cerrarModal = () => (modalOpen.value = false)
+    if (rol === '' && !empleadoSeleccionado.value) {
+        alert('Debes seleccionar un empleado disponible')
+        return
+    }
 
-const guardarCambios = async () => {
+    if (rol !== '' && tipoCliente.value === 'registrado' && !usuarioSeleccionado.value) {
+        alert('Debes seleccionar un usuario registrado')
+        return
+    }
+
     try {
-        const id = modalData.value.id
-
-        // Normalizamos la hora a formato HH:mm
-        let horaInicio = modalData.value.hora_inicio
-        if (horaInicio.includes('T')) {
-            // formato ISO => "YYYY-MM-DDTHH:MM:SS"
-            horaInicio = horaInicio.split('T')[1].substring(0, 5)
-        } else if (horaInicio.length === 8) {
-            // formato "HH:MM:SS"
-            horaInicio = horaInicio.substring(0, 5)
+        const payload: any = {
+            id_negocio: idNegocio.value,
+            id_servicio: idServicio.value,
+            fecha: fecha.value,
+            hora_inicio: hora.value,
         }
 
-        const datos = {
-            id_empleado: modalData.value.id_empleado,
-            id_servicio: modalData.value.id_servicio,
-            id_negocio: modalData.value.id_negocio,
-            fecha: modalData.value.fecha.split('T')[0], // YYYY-MM-DD
-            hora_inicio: horaInicio
+        if (rol === '') {
+            // Cliente agenda → necesita id_empleado del seleccionado
+            payload.id_empleado = empleadoSeleccionado.value?.id_usuario_negocio
+        } else {
+            // Empleado agenda
+            payload.id_empleado = idEmpleado
+            if (tipoCliente.value === 'registrado') {
+                payload.id_usuario = usuarioSeleccionado.value?.id
+            } else {
+                payload.nombre_cliente = nombreInvitado.value || null
+            }
         }
 
-        console.log('🟡 Enviando datos:', datos)
-
-        const res = await axiosInstance.patch(`/citas/${id}/posponer`, datos)
-        console.log('✅ Respuesta:', res.data)
-
-        alert('Cita actualizada correctamente')
-        modalOpen.value = false
-        await cargarCitas()
+        console.log('Payload a enviar:', payload)
+        await axiosInstance.post('/citas/solicitar', payload)
+        alert('Cita agendada correctamente ✅')
     } catch (error: any) {
-        console.error('❌ Error:', error.response?.data || error)
-        alert(error.response?.data?.mensaje || 'Error al actualizar la cita')
-    }
-}
-
-const cancelarCita = async (cita: Cita) => {
-    if (!confirm('¿Deseas cancelar esta cita?')) return
-    try {
-        await axiosInstance.delete(`/citas/${cita.id}/cancelar`)
-        alert('Cita cancelada correctamente')
-        await cargarCitas()
-    } catch (error: any) {
-        console.error(error)
-        alert(error.response?.data?.mensaje || 'Error al cancelar la cita')
+        console.error('Error al agendar cita:', error)
+        alert('Error al agendar la cita ❌')
     }
 }
 </script>
-
-<style scoped>
-ion-datetime {
-    margin-top: 10px;
-}
-</style>
