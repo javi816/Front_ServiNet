@@ -3,7 +3,6 @@ import axiosInstance from '@/services/axiosInstance'
 export interface Negocio {
     id: number
     nombre: string
-    descripcion: string            // 🔹 Campo agregado
     direccion: string
     telefono: string
     correo: string
@@ -15,7 +14,6 @@ export interface Negocio {
 
 export interface NegocioSolicitud {
     nombre: string
-    descripcion: string            // 🔹 Campo agregado
     direccion: string
     telefono: string
     correo: string
@@ -25,6 +23,7 @@ export interface NegocioSolicitud {
 export interface MiNegocioResponse {
     negocio: Negocio | null
     rol?: string
+    id_empleado?: number | null
 }
 
 export const negocioService = {
@@ -64,17 +63,21 @@ export const negocioService = {
     async getMiNegocio(): Promise<MiNegocioResponse> {
         try {
             const response = await axiosInstance.post<MiNegocioResponse>('/mi-negocio')
+            console.log('Respuesta /mi-negocio:', response.data)
             const data = response.data
 
             // Guarda localmente para futuras cargas rápidas
             localStorage.setItem('negocio', JSON.stringify(data.negocio))
             localStorage.setItem('rol', data.rol || '')
+            localStorage.setItem('id_empleado', data.id_empleado?.toString() || '')
 
             return data
         } catch (error: any) {
             console.warn('No se pudo obtener el negocio del usuario:', error)
             localStorage.removeItem('negocio')
             localStorage.removeItem('rol')
+            localStorage.removeItem('id_empleado')
+
             return { negocio: null }
         }
     },
@@ -88,9 +91,14 @@ export const negocioService = {
     getRol() {
         return localStorage.getItem('rol') || null
     },
+    getIdEmpleado() {
+        const val = localStorage.getItem('id_empleado')
+        return val ? parseInt(val) : null
+    },
 
     clearNegocio() {
         localStorage.removeItem('negocio')
         localStorage.removeItem('rol')
+        localStorage.removeItem('id_empleado')
     },
 }

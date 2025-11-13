@@ -17,10 +17,10 @@
       <div v-else>
         <!-- 🔍 Buscar usuarios disponibles -->
         <ion-item>
-          <ion-input label-placement="floating" 
+          <ion-input
             v-model="query"
             placeholder="Buscar usuario por nombre o email"
-          ></ion-input >
+          ></ion-input>
           <ion-button @click="buscarUsuarios" expand="block">Buscar</ion-button>
         </ion-item>
 

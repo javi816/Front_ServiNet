@@ -1,0 +1,29 @@
+[33md7995ca[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mrivera_branch[m[33m, [m[1;31morigin/rivera_branch[m[33m)[m HEAD@{0}: commit: Mantengo mis cambios locales tras merge con main
+[33md7d2bce[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{1}: pull origin main: Fast-forward
+[33me2e34c5[m HEAD@{2}: reset: moving to HEAD
+[33me2e34c5[m HEAD@{3}: commit: Css y menú en login, registro, negocios y mi negocio
+[33m5674dfd[m HEAD@{4}: pull origin main: Fast-forward
+[33m3872f45[m HEAD@{5}: pull origin main: Fast-forward
+[33m8f842d6[m HEAD@{6}: commit: vercel.json para despliegue
+[33m5761824[m HEAD@{7}: commit: configuraciones para despliegue
+[33m591ab4b[m HEAD@{8}: pull origin main: Fast-forward
+[33m4d9bc0a[m HEAD@{9}: commit: Deploy
+[33m38528e1[m HEAD@{10}: commit: se agrego redirects para build
+[33m1aca6e6[m HEAD@{11}: merge origin/main: Merge made by the 'ort' strategy.
+[33m4d642af[m HEAD@{12}: commit: refactorizaciones menores
+[33m201874c[m HEAD@{13}: commit: CRUD de servicios listo
+[33md989442[m HEAD@{14}: pull origin main: Fast-forward
+[33m146bb64[m HEAD@{15}: reset: moving to HEAD
+[33m146bb64[m HEAD@{16}: pull origin main: Fast-forward
+[33m7ef48f0[m HEAD@{17}: commit: Guardar en el LocalStorage datos del negocio
+[33m78b32ec[m HEAD@{18}: pull origin rivera_branch --rebase (finish): returning to refs/heads/rivera_branch
+[33m78b32ec[m HEAD@{19}: pull origin rivera_branch --rebase (pick): Se agrega logica para guardar informacion del negocio
+[33m4dddf15[m HEAD@{20}: pull origin rivera_branch --rebase (start): checkout 4dddf15a6187bcad842c1e6d215a1c120c05bfc2
+[33ma11bf7b[m HEAD@{21}: commit: Se agrega logica para guardar informacion del negocio
+[33m4e47bce[m HEAD@{22}: commit: Servicios de autenticacion, negocios y solicitudes mas sus respectivas vistas
+[33mf07ecc6[m[33m ([m[1;32mmain[m[33m, [m[1;32macosta_branch[m[33m)[m HEAD@{23}: checkout: moving from main to rivera_branch
+[33mf07ecc6[m[33m ([m[1;32mmain[m[33m, [m[1;32macosta_branch[m[33m)[m HEAD@{24}: checkout: moving from acosta_branch to main
+[33mf07ecc6[m[33m ([m[1;32mmain[m[33m, [m[1;32macosta_branch[m[33m)[m HEAD@{25}: checkout: moving from main to acosta_branch
+[33mf07ecc6[m[33m ([m[1;32mmain[m[33m, [m[1;32macosta_branch[m[33m)[m HEAD@{26}: commit: Autenticacion configurada
+[33m18888d4[m HEAD@{27}: Branch: renamed refs/heads/master to refs/heads/main
+[33m18888d4[m HEAD@{29}: commit (initial): Initial commit

@@ -12,6 +12,8 @@ import SolicitudesView from '@/views/SolicitudesView.vue'
 import EmpleadoList from '@/views/EmpleadoList.vue'
 import ServiciosNegociosView from '@/views/ServiciosNegociosView.vue'
 import RegisterView from '@/views/RegisterView.vue'
+import CitasUsuarioView from '@/views/CitasUsuarioView.vue'
+import AgendarCitaView from '@/views/AgendarCitaView.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -83,7 +85,18 @@ const routes: Array<RouteRecordRaw> = [
     component : ServiciosNegociosView,
     meta: { requiresAuth: true }
   },
-
+  {
+    path: '/citas/agendar/:id_negocio/:id_servicio',
+    name: 'AgendarCita',
+    component: AgendarCitaView,
+    meta: { requiresAuth: true}
+  },
+  {
+    path: '/citas-usuario',
+    name: 'citas-usuario',
+    component : CitasUsuarioView,
+    meta: { requiresAuth: true }
+  }
 ]
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

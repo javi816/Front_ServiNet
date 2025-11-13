@@ -25,9 +25,8 @@
                         <p><strong>Precio:</strong> ${{ servicio.precio }}</p>
                     </ion-label>
 
-                    <!-- Botón para solicitar cita -->
-                    <ion-button slot="end" color="primary" @click="solicitarCita(servicio)">
-                        Solicitar cita
+                    <ion-button slot="end" color="tertiary" @click="irAAgendar(servicio.id)">
+                        Agendar
                     </ion-button>
                 </ion-item>
             </ion-list>
@@ -45,39 +44,77 @@ import {
     IonRefresher, IonRefresherContent, IonText, IonButton
 } from '@ionic/vue'
 import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { servicioService, type Servicio } from '@/services/servicioService'
-import { useRouter, useRoute } from 'vue-router'
 
+// Router y route
 const router = useRouter()
 const route = useRoute()
 
+// Obtener id del negocio desde la URL
+const id_negocio = ref<number | null>(null)
+
+// Datos
 const servicios = ref<Servicio[]>([])
 const cargando = ref(false)
-const id_negocio = ref(route.params.id_negocio) // obtiene el ID del negocio desde la URL
 
+// Cargar servicios del negocio
 const cargarServicios = async () => {
     try {
         cargando.value = true
-        const lista = await servicioService.listarPorNegocio(id_negocio.value) // usa el ID del negocio
+
+        // Asegurar que tenemos el ID del negocio
+        if (!route.params.id_negocio) {
+            console.error('No se encontró id_negocio en la ruta.')
+            servicios.value = []
+            return
+        }
+
+        id_negocio.value = Number(route.params.id_negocio)
+        console.log('Cargando servicios del negocio:', id_negocio.value)
+
+        const lista = await servicioService.listarPorNegocio(id_negocio.value)
         servicios.value = Array.isArray(lista) ? lista : []
     } catch (e) {
+        console.error('Error al cargar servicios:', e)
         servicios.value = []
     } finally {
         cargando.value = false
     }
 }
 
+const irAAgendar = (id_servicio: any) => {
+    console.log('Datos recibidos en irAAgendar:', { id_negocio: id_negocio.value, id_servicio })
+
+    if (!id_negocio.value) {
+        console.error('No se encontró id_negocio.')
+        return
+    }
+
+    if (!id_servicio) {
+        console.error('No se recibió id_servicio.')
+        return
+    }
+
+    console.log('Navegando a agendar cita con:', {
+        id_negocio: id_negocio.value,
+        id_servicio
+    })
+
+    router.push({
+        name: 'AgendarCita',
+        params: {
+            id_negocio: id_negocio.value.toString(),
+            id_servicio: id_servicio.toString()
+        }
+    })
+}
+
+
+// Refrescar lista
 const onRefresher = async (event: any) => {
     await cargarServicios()
     event.detail?.complete()
-}
-
-// Redirige a la vista de citas
-const solicitarCita = (servicio: Servicio) => {
-    router.push({
-        name: 'citas-usuario',
-        query: { id_servicio: servicio.id_servicio }
-    })
 }
 
 onMounted(cargarServicios)

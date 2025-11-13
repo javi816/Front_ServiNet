@@ -3,7 +3,8 @@ import axiosInstance from './axiosInstance'
 import { authService } from './authService'
 
 export interface Servicio {
-    id_servicio: number
+    id?: number,
+    id_servicio?: number
     id_negocio: number
     nombre: string
     descripcion: string
